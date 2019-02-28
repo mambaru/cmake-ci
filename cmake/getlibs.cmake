@@ -90,7 +90,7 @@ MACRO(wfc_libs)
     getlibs(faslib wjson wlog wflow iow wjrpc wrtstat wfc)
     include(FindThreads)
     find_package(Boost COMPONENTS system program_options filesystem date_time regex REQUIRED)
-    set(WFC_LIBRARIES wfc wrtstat wlog wflow wjrpc ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    set(WFC_LIBRARIES wfc iow wrtstat wlog wflow wjrpc ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
   endif()
 ENDMACRO(wfc_libs)
 
