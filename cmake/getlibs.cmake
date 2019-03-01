@@ -12,57 +12,70 @@ FUNCTION( get_liburl curlib liburl)
   endif()
 ENDFUNCTION ()
 
+MACRO(clonelib curlib)
+  message("Check ${curlib} library")
+  set(libdir "external/${curlib}")
+  set(libpath "${CMAKE_CURRENT_SOURCE_DIR}/${libdir}")
+  if ( ${curlib} STREQUAL "faslib" )
+    set(FAS_TESTING_CPP "${libpath}/fas/testing/testing.cpp")
+  endif()
+    
+  execute_process(
+    COMMAND bash "-c" "ls -1 ${libdir} | wc -l" 
+    OUTPUT_VARIABLE EXIST_LIB_FILES
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    ERROR_QUIET
+  )
+    
+  if( ${EXIST_LIB_FILES} EQUAL 0)
+    message("Get ${curlib} library")
+        
+    execute_process(
+      COMMAND 
+        git submodule update --init -- "${libdir}"
+      WORKING_DIRECTORY 
+        ${CMAKE_CURRENT_SOURCE_DIR}
+      RESULT_VARIABLE
+        EXIT_CODE
+      ERROR_QUIET
+    )
+    
+    if ( NOT EXIT_CODE EQUAL 0 )
+      get_liburl(${curlib} liburl)
+      message("Clone ${curlib} library from ${liburl}")
+      execute_process(
+        COMMAND 
+          git submodule add --force "${liburl}" "${libdir}"
+        WORKING_DIRECTORY 
+          ${CMAKE_CURRENT_SOURCE_DIR}
+        RESULT_VARIABLE
+          EXIT_CODE
+      )
+    endif()
+
+    if ( NOT EXIT_CODE EQUAL 0 )
+      message(FATAL_ERROR "WAMBA CMAKE-CI: Cannot add submodule git@github.lan:cpp/${curlib}.git")
+    endif()
+  endif()
+ENDMACRO(clonelib)
+
 MACRO(getlibs)
   set(list_var "${ARGN}")
   message("getlibs: ${list_var}")
   foreach(curlib IN LISTS list_var)
-    message("Check ${curlib} library")
+    clonelib(${curlib})
     set(libdir "external/${curlib}")
-    if ( ${curlib} STREQUAL "faslib" )
-      set(FAS_TESTING_CPP "${CMAKE_CURRENT_SOURCE_DIR}/${libdir}/fas/testing/testing.cpp")
-    endif()
-    
-    execute_process(
-      COMMAND bash "-c" "ls -1 ${libdir} | wc -l" 
-      OUTPUT_VARIABLE EXIST_LIB_FILES
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-      ERROR_QUIET
-    )
-    
-    if( ${EXIST_LIB_FILES} EQUAL 0)
-        message("Get ${curlib} library")
-        
-        execute_process(
-          COMMAND 
-            git submodule update --init -- "${libdir}"
-          WORKING_DIRECTORY 
-            ${CMAKE_CURRENT_SOURCE_DIR}
-          RESULT_VARIABLE
-            EXIT_CODE
-          ERROR_QUIET
-        )
-        
-        if ( NOT EXIT_CODE EQUAL 0 )
-          get_liburl(${curlib} liburl)
-          message("Clone ${curlib} library from ${liburl}")
-          execute_process(
-            COMMAND 
-              git submodule add --force "${liburl}" "${libdir}"
-            WORKING_DIRECTORY 
-              ${CMAKE_CURRENT_SOURCE_DIR}
-            RESULT_VARIABLE
-              EXIT_CODE
-          )
-        endif()
-
-        if ( NOT EXIT_CODE EQUAL 0 )
-          message(FATAL_ERROR "WAMBA CMAKE-CI: Cannot add submodule git@github.lan:cpp/${curlib}.git")
-        endif()
-    endif()
-    include_directories("${libdir}")
+    set(libpath "${CMAKE_CURRENT_SOURCE_DIR}/${libdir}")
+    include_directories("${libpath}")
     add_sublibrary("${libdir}")
   endforeach(curlib)
 ENDMACRO(getlibs)
+
+FUNCTION(third_party_libs libs)
+  set(CMAKE_BUILD_TYPE Release)
+  set(CMAKE_CXX_FLAGS "-fpic -O3 -DNDEBUG")
+  getlibs( ${libs} )
+ENDFUNCTION()
 
 MACRO(rootlibs)
   if ( STANDALONE )
