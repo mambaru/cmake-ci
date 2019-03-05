@@ -2,6 +2,7 @@ include(getlibs)
 
 FUNCTION(get_rocksdb)
   if ( STANDALONE )
+    SET(USE_RTTI  ON CACHE BOOL "Enabling RTTI")
     SET(WITH_TESTS  OFF CACHE BOOL "Build with tests")
     set(WITH_TOOLS  OFF CACHE BOOL "Build with tools")
     set(WITH_GFLAGS OFF CACHE BOOL "Build with GFlags")
