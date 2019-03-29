@@ -92,10 +92,20 @@ if ( CMAKE_CXX_STANDARD EQUAL 98 )
   
 endif()
 
-
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/archive")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin")
 set(UNIT_TEST_BIN_OUTPUT_DIR "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/tests")
+
+MACRO(add_test_memcheck test)
+  if ( NOT CODE_COVERAGE )
+    add_test(
+      NAME "${test}-memcheck"
+      COMMAND valgrind --tool=memcheck --leak-check=full --error-exitcode=1 ${UNIT_TEST_BIN_OUTPUT_DIR}/${test} ${ARGN}
+      WORKING_DIRECTORY ${UNIT_TEST_BIN_OUTPUT_DIR} 
+    )
+  endif()
+ENDMACRO(add_test_memcheck)
+
 
 
