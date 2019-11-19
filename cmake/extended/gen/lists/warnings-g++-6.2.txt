@@ -1,0 +1,9 @@
+-Wc++11-compat 
+-Wduplicated-cond 
+-Wfloat-conversion 
+-Wmultiple-inheritance 
+-Wnamespaces 
+-Wnull-dereference 
+-Wsign-conversion 
+-Wtemplates 
+-Wvirtual-inheritance 

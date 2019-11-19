@@ -1,129 +1,169 @@
-FUNCTION( add_sublibrary libdir)
+FUNCTION( wci_submodule_subdirectory libdir)
     set(BUILD_TESTING OFF)
-    set(PARANOID_WARNING OFF)
+    set(PARANOID_WARNINGS OFF)
     set(CODE_COVERAGE OFF)
     set(WITH_SAMPLES OFF)
-    set(CMAKE_CXX_FLAGS "")
-    set(CMAKE_CXX_FLAGS_RELEASE "")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO  "")
-    set(CMAKE_CXX_FLAGS_DEBUG  "")
-    include(opt)
-    add_subdirectory("${libdir}")
+    include(target)
+    add_subdirectory("${PROJECT_SOURCE_DIR}/${libdir}")
 ENDFUNCTION ()
 
-FUNCTION( get_liburl curlib liburl)
-  if (DEFINED "${curlib}_REPO")
-    set(liburl "${${curlib}_REPO}" PARENT_SCOPE)
+# преобразует имя в части для полного url субмодуля в зависимости
+# от установок глобальных переменных
+FUNCTION( wci_prepare_name raw_name name_lib uri_lib)
+
+  get_filename_component(namelib "${raw_name}" NAME_WE )
+
+  if (DEFINED ${raw_name}_REPO)
+    set(raw_name "${${raw_name}_REPO}")
+  endif()
+
+  get_filename_component(extlib "${raw_name}" EXT )
+
+  if ( "${extlib}" STREQUAL "" )
+    # Имя библиотеки с группой или без (cpp/wjson или wjson)
+    set(preflib "${REPO_PREF}")
+    set(extlib ".git")
+    get_filename_component(dirlib "${raw_name}" DIRECTORY)
+    if ( "${dirlib}" STREQUAL "" )
+      set(grplib "${REPO_GROUP}")
+    else()
+      get_filename_component(grplib "${dirlib}" NAME_WE)
+      set(grplib "${grplib}/")
+    endif()
   else()
-    set(liburl "${REPO_PREFIX}/${curlib}.git" PARENT_SCOPE)
+    # Указан полный путь ()
+    get_filename_component(trash "${raw_name}" DIRECTORY)
+    get_filename_component(grplib "${trash}" NAME)
+    set(grplib "${grplib}/")
+
+    string(LENGTH "${grplib}${namelib}${extlib}" tail_len)
+    string(LENGTH "${raw_name}" lib_len)
+    math(EXPR pref_len "${lib_len}-${tail_len}")
+    string(SUBSTRING "${raw_name}" 0 ${pref_len} preflib)
   endif()
+
+  set(${name_lib} "${namelib}" PARENT_SCOPE)
+  set(${uri_lib} "${preflib}${grplib}${namelib}${extlib}" PARENT_SCOPE)
 ENDFUNCTION ()
 
-MACRO(clonelib curlib)
-  message("Check ${curlib} library")
-  set(libdir "external/${curlib}")
-  set(libpath "${CMAKE_CURRENT_SOURCE_DIR}/${libdir}")
-  if ( ${curlib} STREQUAL "faslib" )
-    set(FAS_TESTING_CPP "${libpath}/fas/testing/testing.cpp")
+
+FUNCTION(wci_add_submodule namelib liburl branch)
+
+  if ( NOT "${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}" )
+    message(FATAL_ERROR "Allowed to be used only in project directory: ${PROJECT_SOURCE_DIR}")
   endif()
-    
+
+  set(libdir "external/${namelib}")
+  set(libpath "${PROJECT_SOURCE_DIR}/${libdir}")
+
   execute_process(
-    COMMAND bash "-c" "ls -1 ${libdir} | wc -l" 
+    COMMAND bash "-c" "ls -1 ${libdir} | wc -l"
     OUTPUT_VARIABLE EXIST_LIB_FILES
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     ERROR_QUIET
   )
-    
+
   if( ${EXIST_LIB_FILES} EQUAL 0)
-    message("Get ${curlib} library")
-        
+
+    message("Get ${liburl} library")
+
     execute_process(
-      COMMAND 
+      COMMAND
         git submodule update --init -- "${libdir}"
-      WORKING_DIRECTORY 
-        ${CMAKE_CURRENT_SOURCE_DIR}
+      WORKING_DIRECTORY
+        ${PROJECT_SOURCE_DIR}
       RESULT_VARIABLE
         EXIT_CODE
       ERROR_QUIET
     )
-    
+
     if ( NOT EXIT_CODE EQUAL 0 )
-      get_liburl(${curlib} liburl)
-      message("Clone ${curlib} library from ${liburl}")
+      if ( "${branch}" STREQUAL "" )
+        set(branch master)
+      endif()
+
+      message("Clone ${namelib} library from ${liburl} branch ${branch}")
       execute_process(
-        COMMAND 
-          git submodule add --force "${liburl}" "${libdir}"
-        WORKING_DIRECTORY 
-          ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMAND
+          git submodule add -b "${branch}" --force "${liburl}" "${libdir}"
+        WORKING_DIRECTORY
+          ${PROJECT_SOURCE_DIR}
         RESULT_VARIABLE
           EXIT_CODE
       )
-    endif()
 
-    if ( NOT EXIT_CODE EQUAL 0 )
-      message(FATAL_ERROR "WAMBA CMAKE-CI: Cannot add submodule git@github.lan:cpp/${curlib}.git")
+      if ( NOT EXIT_CODE EQUAL 0 )
+        message(FATAL_ERROR "WAMBA CMAKE-CI: Cannot add submodule ${liburl}")
+      endif()
+
+    elseif ( NOT "${branch}" STREQUAL ""  )
+
+      message("Sumbodule ${libdir} checkout branch ${branch}")
+
+      execute_process(
+        COMMAND
+          git checkout ${branch}
+        WORKING_DIRECTORY
+          ${libpath}
+        RESULT_VARIABLE
+          EXIT_CODE
+        ERROR_QUIET
+      )
+
+      if ( NOT EXIT_CODE EQUAL 0 )
+        message(FATAL_ERROR "WAMBA CMAKE-CI: Cannot checkout ${libdir} branch ${branch}")
+      endif()
+
     endif()
   endif()
-ENDMACRO(clonelib)
+ENDFUNCTION(wci_add_submodule)
 
-MACRO(getlibs)
-  set(list_var "${ARGN}")
-  message("getlibs: ${list_var}")
-  foreach(curlib IN LISTS list_var)
-    clonelib(${curlib})
-    set(libdir "external/${curlib}")
-    set(libpath "${CMAKE_CURRENT_SOURCE_DIR}/${libdir}")
-    list(APPEND CMAKE_MODULE_PATH "${libpath}/cmake")
-    include_directories("${libpath}")
-    add_sublibrary("${libdir}")
-  endforeach(curlib)
-ENDMACRO(getlibs)
+FUNCTION(wci_getlib )
 
-FUNCTION(third_party_libs libs)
-  message("third_party_libs: ${libs}")
-  foreach(curlib IN LISTS libs)
-    clonelib(${curlib})
-    set(libdir "external/${curlib}")
-    set(libpath "${CMAKE_CURRENT_SOURCE_DIR}/${libdir}")
-    include_directories("${libpath}")
-    set(CMAKE_BUILD_TYPE Release)
-    #set(CMAKE_CXX_FLAGS "-fpic -O3 -DNDEBUG")
-    set(CMAKE_CXX_FLAGS "")
-    message("add_subdirectory: ${libdir}")
-    add_subdirectory("${libdir}")
-  endforeach(curlib)
-ENDFUNCTION()
+  cmake_parse_arguments(arg "SUPERMODULE" "NAME;BRANCH" "" ${ARGN} )
 
-MACRO(rootlibs)
-  if ( STANDALONE )
-    getlibs(${ARGN})
+  if ( NOT arg_NAME )
+    set(arg_NAME "${ARGV0}")
+    if ( NOT arg_BRANCH )
+      set(arg_BRANCH "${ARGV1}")
+    endif()
   endif()
-ENDMACRO(rootlibs)
+
+  if ( NOT arg_BRANCH )
+    set(arg_BRANCH "")
+  endif()
+
+  if ( arg_SUPERMODULE )
+    set(WCI_SUPERMODULE "SUPERMODULE")
+  else()
+    if ( NOT WCI_SUPERMODULE)
+      return()
+    endif()
+   unset(WCI_SUPERMODULE)
+  endif()
+  wci_prepare_name(${arg_NAME} name_lib uri_lib)
+  wci_add_submodule("${name_lib}" "${uri_lib}" "${arg_BRANCH}")
+  wci_submodule_subdirectory("external/${name_lib}")
+ENDFUNCTION(wci_getlib)
 
 MACRO(wfcroot)
-  getlibs(wfcroot)
-  list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/external/wfcroot/external/wfc/cmake)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/)  
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/wfcroot/external/wfc_jsonrpc)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/wfcroot/external/wfc_io)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/wfcroot/external/wfc_core)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/wfcroot/external/wfc)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/wfcroot/external/iow)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/wfcroot/external/wrtstat)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/wfcroot/external/wjrpc)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/wfcroot/external/wflow)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/wfcroot/external/wlog)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/wfcroot/external/wjson)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/wfcroot/external/faslib)
-  getlibs(${ARGN})
+  cmake_parse_arguments(arg "" "BRANCH" "" ${ARGN} )
+  if ( NOT arg_BRANCH )
+    set(arg_BRANCH "master")
+  endif()
+  list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/external/wfcroot/external/wfc/cmake)
+  wci_getlib(NAME wfcroot BRANCH "${arg_BRANCH}")
 ENDMACRO(wfcroot)
 
-MACRO(wfc_libs)
-  if ( STANDALONE )
-    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/external/wfc/cmake)
-    getlibs(faslib wjson wlog wflow iow wjrpc wrtstat wfc ${ARGN})
-    include(FindThreads)
-    find_package(Boost COMPONENTS system program_options filesystem date_time regex REQUIRED)
-    set(WFC_LIBRARIES wfc iow wrtstat wlog wflow wjrpc ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+MACRO(wfc)
+  cmake_parse_arguments(arg "" "BRANCH" "" ${ARGN} )
+  if ( NOT arg_BRANCH )
+    set(arg_BRANCH "master")
   endif()
-ENDMACRO(wfc_libs)
+  if ( WCI_TOPLEVEL )
+    list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/external/wfc/cmake)
+    set(WFC_TOPLEVEL "SUPERMODULE")
+    wci_getlib(NAME wfc BRANCH "${arg_BRANCH}")
+    get_property(FAS_TESTING_CPP GLOBAL PROPERTY FAS_TESTING_CPP)
+  endif()
+ENDMACRO(wfc)

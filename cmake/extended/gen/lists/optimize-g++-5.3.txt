@@ -1,0 +1,9 @@
+-fbranch-probabilities 
+-fdelete-dead-exceptions 
+-fira-loop-pressure 
+-fisolate-erroneous-paths-attribute 
+-flive-range-shrinkage 
+-fmodulo-sched-allow-regmoves 
+-fopt-info 
+-freciprocal-math 
+-ftracer 

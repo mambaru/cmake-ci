@@ -1,0 +1,5 @@
+-Wc++17-compat 
+-Wnoexcept-type 
+-Wpessimizing-move 
+-Wredundant-move 
+-Wzero-as-null-pointer-constant 

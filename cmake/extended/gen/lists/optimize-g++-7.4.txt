@@ -1,0 +1,8 @@
+-falign-functions 
+-falign-jumps 
+-falign-loops 
+-flimit-function-alignment 
+-fstack-protector 
+-fstack-protector-all 
+-fstack-protector-explicit 
+-fstack-protector-strong 

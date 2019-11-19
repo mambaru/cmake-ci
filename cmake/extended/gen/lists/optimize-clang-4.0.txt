@@ -1,0 +1,5 @@
+-freciprocal-math 
+-fstack-clash-protection 
+-fstack-protector 
+-fstack-protector-all 
+-fstack-protector-strong 

@@ -1,0 +1,15 @@
+-fexceptions 
+-ffinite-math-only 
+-fnon-call-exceptions 
+-fpack-struct 
+-freciprocal-math 
+-fshort-wchar 
+-fstack-clash-protection 
+-fstack-protector 
+-fstack-protector-all 
+-fstack-protector-strong 
+-fstrict-enums 
+-ftrapv 
+-funroll-loops 
+-funsafe-math-optimizations 
+-fwrapv 
