@@ -19,14 +19,12 @@ function update_if ()
     echo "Отставание от мастера на $count1. Обновляем."
     git checkout master
     git pull origin master
+    git submodule update --recursive
   else
     echo "Переключаем на master."
     git checkout master
   fi
 }
-
-#git submodule sync
-#git submodule update --init
 
 if [[ ! -d external/cmake-ci/cmake ]]; then
   git submodule update --init -- external/cmake-ci || exit $?
@@ -34,15 +32,6 @@ fi
 
 export -f update_if
 git submodule foreach update_if
-
-#git submodule update --recursive
-
-#if [ -d external/wfcroot ]; then
-#  pushd external/wfcroot
-#    git submodule sync
-#    git submodule update --init
-#  popd
-#fi
 
 [ ! -f ${prjdir}/.ci/scripts/after-update.sh ] || ${prjdir}/.ci/scripts/after-upgrade.sh || exit $?
 

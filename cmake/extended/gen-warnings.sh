@@ -29,23 +29,23 @@ while read -r compiler; do
   prefix=$(echo "$headline" | egrep -o "g\+\+" | head -1)
   [ -z $prefix ] && prefix=$(echo "$headline" | egrep -o "clang" | head -1)
   [ -z $prefix ] && prefix=$(echo "$headline" | cut -f1 -d ' ' | head -1)
-  
+
   #echo $headline
   #echo $version
   #echo $prefix
-  
+
   # список префиксов, например g++ и clang, если новый то очищаем список версий для префикса
   grep -Fxq "$prefix" "/tmp/prefix-list.txt" || ( echo "$prefix" >> "/tmp/prefix-list.txt" && >"/tmp/$prefix-versions.txt" )
-  
+
   # текущаяя макс версия
   toppred=$(cat "/tmp/$prefix-versions.txt" | sort --version-sort | tail -1)
-  
+
   # добавить версию для текущего, если ее нет
   grep -Fxq "$version" "/tmp/$prefix-versions.txt" || \
     ( echo "$version" >> "/tmp/$prefix-versions.txt" && echo "$prefix $version $compiler" >> "/tmp/available-compilers.txt" )
-  
+
   [[ "$prefix" == "g++" ]] && [[ "$toppred" < "$version" ]] && generator="$compiler"
- 
+
 done < ./compilers.txt
 
 while read -r compline; do
@@ -73,10 +73,10 @@ for curfile in ./gen/lists/all/$specific*; do
   else
     cp $curfile $commonf
     cp $curfile /tmp/common-options.txt
-  fi 
+  fi
 done
 
-# список файлов опций включая созданные ранее 
+# список файлов опций включая созданные ранее
 ls ./gen/lists/all/$specific* | egrep -o "\-.*\-" | sort | uniq | tac > /tmp/options-sufixes.txt
 
 while read -r sufix; do
@@ -85,12 +85,12 @@ while read -r sufix; do
   while read -r curlst; do
     echo "Уникальные опции для $curlst"
     curname=$(basename $curlst)
-    
+
     sort $curlst > /tmp/left.txt
     sort /tmp/$specific${sufix}common.txt > /tmp/right.txt
     comm -23 /tmp/left.txt /tmp/right.txt > ./gen/lists/$curname
     cat ./gen/lists/$curname >> /tmp/$specific${sufix}common.txt
-    
+
   done < /tmp/$specific${sufix}list.txt
 done < /tmp/options-sufixes.txt
 
@@ -100,8 +100,22 @@ topcheg=$(ls ./gen/lists/all/$specific-g++* | sort --version-sort | grep g++ | g
 echo $topcheg
 for curlst in ./gen/lists/$specific*; do
   curname=$(basename $curlst | sed 's/txt/cmake/g')
-  echo "Генерация cmake для $curname"
-  ./c++warnings.sh -S $specific -s cmake -g "$generator" -G $topcheg -T $curlst $off > "./gen/$curname"
+  echo "Генерация cmake для $curname генератор $generator"
+  ./c++warnings.sh -S $specific -s cmake -g "$generator" -G $topcheg -T $curlst $off > "./gen/$curname-new"
+
+  # если сгенерированный файл не пустой или еще не создан целевой файл
+  # это защита обнуления опций, например для g++-9, если генератор g++-7
+  if [ -s "./gen/$curname-new" ] || [ ! -f "./gen/$curname" ]; then
+    mv "./gen/$curname-new" "./gen/$curname"
+  else
+    # Вероятно скрипт запущен с меньшей версией компилятора g++, чем запускалось ранее,
+    # но с которым до этого не запускалось
+    # Поэтому описание опций из g++ для генерации cmake для более свежих версий недоступно
+    # "Грубо" фильтруем их из предыдущей генерации
+    cp -f ./gen/$curname ./gen/$curname-new
+    grep -Ff "$curlst" "./gen/$curname-new" > ./gen/$curname
+    rm ./gen/$curname-new
+  fi
 done
 
 echo "Генерация общего cmake"
@@ -115,10 +129,10 @@ while read -r sufix; do
     compilerid="GNU"
   elif [[ $sufix == "-clang-" ]]; then
     compilerid="Clang"
-  else 
+  else
     compilerid="TODO"
   fi
-  
+
   echo "if ( \"\${CMAKE_CXX_COMPILER_ID}\" STREQUAL \"$compilerid\" )" >> $ocmake
     for fcmake in ./gen/$specific$sufix*.cmake; do
       version=$(echo $fcmake | egrep -o "[0-9]+.[0-9]+")
@@ -186,7 +200,7 @@ function create_cmake()
     fgen="./gen/lists/$specific-$(basename $topgpp).txt"
     ./c++warnings.sh -S $specific -s cmake -g "$topgpp" -G "$fgen" -T "$fcur" -X "/tmp/current-exclude.txt" $off > "$fcmake"
     ./c++warnings.sh -S $specific -s list -g "$topgpp" -G "$fgen" -T "$fcur" -X "/tmp/current-exclude.txt" >> "/tmp/current-exclude.txt"
-    
+
     echo "  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER $version OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL $version )"  >> $ocmake
     echo "    include(gen/$(basename $fcmake))"  >> $ocmake
     echo "  endif()"  >> $ocmake

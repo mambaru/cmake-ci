@@ -23,7 +23,7 @@ extended_option(-Wswitch-default "Warn about enumerated switches missing a `defa
 extended_option(-Wswitch-enum "Warn about all enumerated switches missing a specific case." ON)
 extended_option(-Wsynth "Deprecated. This switch has no effect." ON)
 extended_option(-Wunused-macros "Warn about macros defined in the main file that are not used." ON)
-extended_option(-Wwrite-strings "In C++, nonzero means warn about deprecated conversion from string literals to 'char *'. In C, similar warning, except that the conversion is of course not deprecated by the ISO C standard." ON)
+extended_option(-Wwrite-strings "In C++, nonzero means warn about deprecated conversion from string literals to 'char *'. In C, similar warning, except that the conversion is of course not" ON)
 extended_option(-Waggregate-return "Warn about returning structures, unions or arrays." OFF)
 extended_option(-Weffc++ "Warn about violations of Effective C++ style rules." OFF)
 extended_option(-Winline "Warn when an inlined function cannot be inlined." OFF)

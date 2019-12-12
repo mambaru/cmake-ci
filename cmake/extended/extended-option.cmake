@@ -1,6 +1,6 @@
 function(extended_option wname)
   set(wopt "${${wname}}")
-  
+
   if ( NOT DEFINED ${wname} )
     if ( DEFINED ARGV2 )
       set(wopt ${ARGV2})
@@ -15,6 +15,5 @@ function(extended_option wname)
     message(STATUS "Set additional option ${wname}: ${wopt} ${desc} " )
     list(APPEND common_wci_options ${wname} )
     set(common_wci_options ${common_wci_options} PARENT_SCOPE)
-    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${wname}" PARENT_SCOPE)
   endif()
 endfunction()

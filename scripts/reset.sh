@@ -49,36 +49,12 @@ git rm -rf external
 git rm -rf .gitmodules
 git submodule add --force $repo external/cmake-ci || exit $?
 
-echo "Рекомендуеться удалить следующие файлы и папки (если существуют):"
-echo "  .ci/"
-echo "  cmake/"
-echo "  .gitlab-ci.yml"
-echo "  Makefile"
-echo "  .travis.yml"
-echo "  wamba-ci.json"
-
-rmfiles=true;
-if [[ "${auto}" != "auto" ]]; then
-  while true; do
-    read -p "Удалить эти файлы и папки ? " yn
-    case $yn in
-      [Yy]* ) rmfiles=true; break;;
-      [Nn]* ) rmfiles=false; break;;
-          * ) echo "Please answer yes or no.";;
-    esac
-  done
-fi
-
-if $rmfiles; then
-  rm -rf .ci
-  rm -f .gitlab-ci.yml
-  rm -f wamba-ci.json
-  rm -f wamba-ci.yml
-fi
-
 [ ! -f ${prjdir}/.ci/scripts/after-reset.sh ] || ${prjdir}/.ci/scripts/after-reset.sh || exit $?
 
 auto_rm
-
 git add .
-git commit -m "cmake-ci reset autocommit"
+if git commit -m "cmake-ci reset autocommit"; then
+  echo "Все изменения автоматически зафиксированы. Для отмены, наберите: "
+  echo "  git reset --hard HEAD~1"
+fi
+
