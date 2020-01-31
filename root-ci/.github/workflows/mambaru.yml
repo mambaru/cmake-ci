@@ -29,7 +29,6 @@ jobs:
             sudo apt-get install libzstd-dev
           fi
 
-
       - name: Подключение субмодулей (прописаны в cmake)
         run: |
           mkdir -p build
