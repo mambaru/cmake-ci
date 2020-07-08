@@ -1,0 +1,2 @@
+-Wc++1z-compat 
+-Wrestrict 

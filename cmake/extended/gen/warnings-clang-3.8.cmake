@@ -1,5 +1,6 @@
 extended_option(-Wc++11-compat "Warn about C++ constructs whose meaning differs between ISO C++ 1998 and ISO C++ 2011." ON)
 extended_option(-Wc++14-compat "Warn about C++ constructs whose meaning differs between ISO C++ 2011 and ISO C++ 2014." ON)
+extended_option(-Wc++1z-compat "Warn about C++ constructs whose meaning differs between ISO C++ 2014 and (forthcoming) ISO C++ 201z(7?)." ON)
 extended_option(-Wdate-time "Warn about __TIME__, __DATE__ and __TIMESTAMP__ usage." ON)
 extended_option(-Wdouble-promotion "Warn about implicit conversions from `float` to `double`." ON)
 extended_option(-Wfloat-conversion "Warn for implicit type conversions that cause loss of floating point precision." ON)
