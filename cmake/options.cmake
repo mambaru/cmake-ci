@@ -40,6 +40,7 @@ if ( NOT CMAKE_CXX_EXTENSIONS )
   list(APPEND common_wci_properties CXX_EXTENSIONS OFF)
 endif()
 
+option(BUILD_SHARED_LIBS "Create shared libraries" ON)
 option(CODE_COVERAGE "Build with code coverage" OFF)
 option(BUILD_TESTING "Build with tests and samples" OFF)
 option(WITH_SAMPLES "Build with samples" ON)
