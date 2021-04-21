@@ -34,6 +34,6 @@ jobs:
              export CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }}
              bash <(curl -s https://codecov.io/bash)
           popd
-          git push https://${{ secrets.ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git mambaru:master
-          git push https://${{ secrets.ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git :mamba-ready || true
+          git push https://${{ secrets.ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git HEAD:master
+          git push https://${{ secrets.ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git :mamba-ready > /dev/null || true
           git push https://${{ secrets.ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git :mambaru || echo "Delete mambaru FAIL"
