@@ -7,7 +7,7 @@ prjdir="${PWD}"
 
 if [ -z "$1" ]; then
   echo "Нужно указать путь к cmake-ci, например: "
-  echo "  $0 ./cmake-ci.git"
+  echo "  $0 ../cmake-ci.git"
   echo "  $0 git@gitlab.mamba.ru:cpp/cmake-ci.git"
   echo "  $0 git@gitlab.mamba.ru:testci/cmake-ci.git"
   echo "  $0 https://github.com/mambaru/cmake-ci.git"
