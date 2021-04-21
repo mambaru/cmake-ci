@@ -1,5 +1,3 @@
-include(${CMAKE_CURRENT_LIST_DIR}/ogenc.cmake)
-
 MACRO(wci_target_ target )
   target_ogenc_warnings(${target})
   target_ogenc_optimize(${target})
