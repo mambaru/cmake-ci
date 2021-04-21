@@ -1,0 +1,36 @@
+macro(ogenc_option outvar wname)
+
+  unset(wopt)
+  if (DEFINED ${wname})
+    set( "${${wname}}")
+  endif()
+
+  if ( NOT DEFINED ${wopt} )
+    if ( ${ARGC} GREATER 3 )
+      set(wopt ${ARGV3})
+    elseif( ${ARGC} GREATER  2 )
+      set(wopt ${ARGV2})
+    else()
+      set(wopt ON)
+    endif()
+  endif()
+
+  if ( ${wopt} )
+    message(STATUS "Set additional option ${wname} for ${PROJECT_NAME}: ${wopt}" )
+    list(APPEND ${outvar} "${wname}" )
+  else()
+    message(STATUS "Ignore additional option ${wname} for ${PROJECT_NAME}: ${wopt}" )
+    list(REMOVE_ITEM ${outvar} "${wname}" )
+  endif()
+  list(SORT ${outvar} )
+  list(REMOVE_DUPLICATES ${outvar} )
+endmacro()
+
+
+macro(ogenc_warning wname)
+  ogenc_option(ogenc_warning_options ${wname} ${ARGN} )
+endmacro()
+
+macro(ogenc_optimize wname)
+  ogenc_option(ogenc_optimize_options ${wname} ${ARGN} )
+endmacro()

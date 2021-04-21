@@ -1,2 +1,0 @@
--fstack-clash-protection 
--fwrapv-pointer 

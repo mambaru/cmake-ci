@@ -1,9 +1,0 @@
--Wc++14-compat 
--Wformat-signedness 
--Winvalid-pch 
--Wmissing-include-dirs 
--Wmultichar 
--Wsuggest-final-methods 
--Wsuggest-final-types 
--Wsuggest-override 
--Wundef 

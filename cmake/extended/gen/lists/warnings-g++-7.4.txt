@@ -1,7 +1,0 @@
--Walloca 
--Walloc-zero 
--Wduplicated-branches 
--Wnoexcept-type 
--Wregister 
--Wshadow=compatible-local 
--Wshadow=local 

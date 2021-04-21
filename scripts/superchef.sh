@@ -9,6 +9,7 @@
 # не догонят мастер в процессе ночных обновлений
 
 function check_subsubmodule {
+  echo ">> >> check_subsubmodule $1 ($PWD)"
   git fetch origin master
   master=$(git rev-list --count origin/master)
   head=$(git rev-list --count HEAD)
@@ -24,8 +25,11 @@ function check_subsubmodule {
 }
 
 function check_submodule {
-  git submodule update --init --depth=100
-  git submodule foreach bash -c "check_subsubmodule $1 ${PWD##*/}"
+  echo ">> check_submodule $1 ($PWD)"
+  git checkout master
+  git pull origin master
+  git submodule update --init
+  git submodule foreach "$(declare -f check_subsubmodule); check_subsubmodule $1 ${PWD##*/}"
   ret=$?
   git submodule deinit --force .
   return $ret
@@ -34,4 +38,5 @@ function check_submodule {
 export -f check_submodule
 export -f check_subsubmodule
 git submodule update --init --depth=100
-git submodule foreach bash -c "check_submodule ${PWD##*/}"
+git submodule foreach "$(declare -f check_subsubmodule); check_submodule ${PWD##*/}"
+git submodule update --recursive

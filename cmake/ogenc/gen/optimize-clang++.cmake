@@ -1,0 +1,6 @@
+if ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.0 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 4.0 )
+    include(${CMAKE_CURRENT_LIST_DIR}/optimize-clang++-4.0.cmake)
+  endif()
+endif()
+

@@ -23,6 +23,8 @@ function update_if ()
   else
     echo "Переключаем на master."
     git checkout master
+    git pull origin master
+    git submodule update --recursive
   fi
 }
 
@@ -31,7 +33,7 @@ if [[ ! -d external/cmake-ci/cmake ]]; then
 fi
 
 export -f update_if
-git submodule foreach update_if
+git submodule foreach "$(declare -f update_if); update_if"
 
 [ ! -f ${prjdir}/.ci/scripts/after-update.sh ] || ${prjdir}/.ci/scripts/after-upgrade.sh || exit $?
 
@@ -41,6 +43,6 @@ if git commit -am "$message"; then
   echo "  git reset --hard HEAD~1"
 fi
 echo "Дальнейшие инструкции найдете здесь:"
-echo "  http://github.lan/cpp/cmake-ci/blob/master/Readme.md"
+echo "  https://gitlab.mamba.ru/cpp/cmake-ci/blob/master/Readme.md"
 echo Done
 exit 0

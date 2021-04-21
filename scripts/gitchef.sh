@@ -26,8 +26,8 @@ function check() {
 
   UPSTREAM='@{u}'
   LOCAL=$(git rev-parse @)  || exit_subm $?
-  REMOTE=$(git rev-parse "$UPSTREAM")  || exit_subm $?
-  BASE=$(git merge-base @ "$UPSTREAM")  || exit_subm $?
+  REMOTE=$(git rev-parse "$UPSTREAM" 2>/dev/null)  || exit_subm $?
+  BASE=$(git merge-base @ "$UPSTREAM" 2>/dev/null)  || exit_subm $?
 
   if [ $LOCAL = $REMOTE ]; then
       echo "Up-to-date"
@@ -48,5 +48,5 @@ check
 if [[ "$1" == "submodules" ]]; then
   export -f check
   export -f exit_subm
-  git submodule foreach check
+  git submodule foreach "$(declare -f check); check"
 fi

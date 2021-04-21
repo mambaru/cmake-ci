@@ -1,10 +1,10 @@
 FUNCTION( wci_submodule_subdirectory libdir)
     set(BUILD_TESTING OFF)
-    set(PARANOID_WARNINGS OFF)
+    if (NOT APOCALYPTIC_WARNINGS)
+      set(PARANOID_WARNINGS OFF)
+    endif()
     set(CODE_COVERAGE OFF)
     set(WITH_SAMPLES OFF)
-    unset(CMAKE_POSITION_INDEPENDENT_CODE)
-    include(target)
     add_subdirectory("${PROJECT_SOURCE_DIR}/${libdir}")
 ENDFUNCTION ()
 
@@ -49,7 +49,6 @@ ENDFUNCTION ()
 
 
 FUNCTION(wci_add_submodule namelib liburl branch)
-
   if ( NOT "${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}" )
     message(FATAL_ERROR "Allowed to be used only in project directory: ${PROJECT_SOURCE_DIR}")
   endif()
@@ -119,8 +118,8 @@ FUNCTION(wci_add_submodule namelib liburl branch)
   endif()
 ENDFUNCTION(wci_add_submodule)
 
-FUNCTION(wci_getlib )
 
+FUNCTION(wci_getlib )
   cmake_parse_arguments(arg "SUPERMODULE" "NAME;BRANCH" "" ${ARGN} )
 
   if ( NOT arg_NAME )
@@ -147,6 +146,7 @@ FUNCTION(wci_getlib )
   wci_submodule_subdirectory("external/${name_lib}")
 ENDFUNCTION(wci_getlib)
 
+
 MACRO(wfcroot)
   cmake_parse_arguments(arg "" "BRANCH" "" ${ARGN} )
   if ( NOT arg_BRANCH )
@@ -155,6 +155,7 @@ MACRO(wfcroot)
   list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/external/wfcroot/external/wfc/cmake)
   wci_getlib(NAME wfcroot BRANCH "${arg_BRANCH}")
 ENDMACRO(wfcroot)
+
 
 MACRO(wfc)
   cmake_parse_arguments(arg "" "BRANCH" "" ${ARGN} )

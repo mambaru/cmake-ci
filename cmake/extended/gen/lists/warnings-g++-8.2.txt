@@ -1,6 +1,0 @@
--Wc++17-compat 
--Wcast-align=strict 
--Wclass-memaccess 
--Wextra-semi 
--Wsuggest-attribute=cold 
--Wsuggest-attribute=malloc 

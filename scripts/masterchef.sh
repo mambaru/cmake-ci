@@ -27,5 +27,5 @@ function check_submodule {
 }
 
 export -f check_submodule
-git submodule foreach bash -c "check_submodule ${PWD##*/}"
+git submodule foreach "$(declare -f check_submodule); check_submodule ${PWD##*/}"
 
