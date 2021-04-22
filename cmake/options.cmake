@@ -60,6 +60,8 @@ env_option(BUILD_TESTING "Build with tests and samples" OFF)
 env_option(CODE_COVERAGE "Build with code coverage" OFF)
 env_option(WITH_SAMPLES "Build with samples" ON)
 env_option(NO_MEMCHECK "Disable all valgrind tests" OFF)
+env_option(APOCALYPTIC_MODE "Do not disable test suite and paranoid warning mode for submodules" OFF)
+
 
 if (NOT BUILD_SHARED_LIBS)
   set(Boost_USE_STATIC_LIBS ON)

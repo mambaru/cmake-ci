@@ -20,11 +20,6 @@ ogenc_env(PARANOID_WARNINGS "Paranoid warnings level" OFF)
 ogenc_env(OGENC_WARNINGS "Paranoid warnings level" OFF)
 ogenc_env(PARANOID_OPTIMIZE "Paranoid optimize level" OFF)
 ogenc_env(OGENC_OPTIMIZE "Paranoid optimize level" OFF)
-ogenc_env(APOCALYPTIC_WARNINGS "Paranoid warnings level include submodules" OFF)
-
-if (APOCALYPTIC_WARNINGS)
-  set(PARANOID_WARNINGS ON)
-endif()
 
 if ( PARANOID_WARNINGS OR OGENC_WARNINGS )
   set(PARANOID_WARNINGS ON)

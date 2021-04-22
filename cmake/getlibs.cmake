@@ -1,10 +1,10 @@
 FUNCTION( wci_submodule_subdirectory libdir)
-    set(BUILD_TESTING OFF)
-    if (NOT APOCALYPTIC_WARNINGS)
+    if (NOT APOCALYPTIC_MODE)
+      set(BUILD_TESTING OFF)
+      set(WITH_SAMPLES OFF)
       set(PARANOID_WARNINGS OFF)
     endif()
     set(CODE_COVERAGE OFF)
-    set(WITH_SAMPLES OFF)
     add_subdirectory("${PROJECT_SOURCE_DIR}/${libdir}")
 ENDFUNCTION ()
 
