@@ -24,7 +24,7 @@ jobs:
           echo "Субмодули подключаються при первой сборке (фиксируем их)"
           git config --global user.email "migashko@gmail.com"
           git config --global user.name "Vladimir Migashko"
-          git config pull.ff only
+          git config pull.rebase true
           git pull origin master
           make coverage-report
           git add .
