@@ -48,7 +48,7 @@ jobs:
 
     - name: push tag
       run: |
-        git pull --tags https://${{ secrets.ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
+        git pull --tags --force https://${{ secrets.ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
         tag=$(git describe --tags `git rev-list --tags --max-count=1`)
         echo "  tag=$tag"
         git config --global user.email "migashko@gmail.com"
