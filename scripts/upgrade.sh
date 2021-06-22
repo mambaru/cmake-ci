@@ -5,6 +5,8 @@ prjdir="${PWD}"
 
 # возможное значение "auto"
 [[ -n "$1" ]] && [[ "$1" == "auto" ]] && export AUTOSYNC=1
+[[ -n "$1" ]] && [[ "$1" == "force" ]] && export AUTOSYNC=1 && export FORCESYNC=1
+
 [ ! -z "$2" ] && branch="$2"
 
 message="cmake-ci upgrade autocommit"

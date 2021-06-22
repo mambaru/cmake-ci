@@ -158,15 +158,33 @@ do
     echo "Файл $line без обновлений (имеет локальные изменения)" >> report.txt
   elif [ ! -e "orig/$line" ]; then
     echo "Прилетел новый файл $line, но у вас уже есть с таким же именем"
-    [[ "$AUTOSYNC" == "1" ]] && echo "Требуется 'ручное' обновление" && exit 1
-    see_and_merge "src/$line" "dst/$line" "orig/$line" || discard=1
+    if [[ "$AUTOSYNC" == "1" ]]; then
+      if [[ "$FORCESYNC" == "1" ]]; then
+        echo "Форсированная замена ${PWD}/dst/$line" 
+        cp "src/$line" "dst/$line"
+      else
+        echo "Требуется 'ручное' обновление" 
+        exit 1
+      fi
+    else
+      see_and_merge "src/$line" "dst/$line" "orig/$line" || discard=1
+    fi
   elif cmp -s "dst/$line" "orig/$line"; then
     echo "Файл $line автообновлен (небыло локальных изменений)"
     cp "src/$line" "dst/$line"
   else
     echo "Файл $line имеет локальные изменения."
-    [[ "$AUTOSYNC" == "1" ]] && echo "Требуется 'ручное' обновление" && exit 1
-    update_or_merge "src/$line" "dst/$line" "orig/$line" || discard=1
+    if [[ "$AUTOSYNC" == "1" ]]; then
+      if [[ "$FORCESYNC" == "1" ]]; then
+        echo "Форсированная замена ${PWD}/dst/$line" 
+        cp "src/$line" "dst/$line"
+      else
+        echo "Требуется 'ручное' обновление" 
+        exit 1
+      fi
+    else
+      update_or_merge "src/$line" "dst/$line" "orig/$line" || discard=1
+    fi
   fi
   if [ $discard -ne 0 ]; then break; fi
   cp "src/$line" "orig/$line"
