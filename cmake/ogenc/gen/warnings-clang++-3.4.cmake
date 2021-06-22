@@ -24,7 +24,7 @@ ogenc_warning(-Wswitch-default "Warn about enumerated switches missing a `defaul
 ogenc_warning(-Wswitch-enum "Warn about all enumerated switches missing a specific case." ON)
 ogenc_warning(-Wsynth "Deprecated. This switch has no effect." ON)
 ogenc_warning(-Wunused-macros "Warn about macros defined in the main file that are not used." ON)
-ogenc_warning(-Wwrite-strings "In C++, nonzero means warn about deprecated conversion from string literals to 'char *'. In C, similar warning, except that the conversion is of course" ON)
+ogenc_warning(-Wwrite-strings "In C++, nonzero means warn about deprecated conversion from string literals to 'char *'. In C, similar warning, except that the conversion is of course not" ON)
 
 ogenc_warning(-Wabi "Warn about things that will change when compiling with an ABI-compliant compiler." OFF)
 ogenc_warning(-Waggregate-return "Warn about returning structures, unions or arrays." OFF)

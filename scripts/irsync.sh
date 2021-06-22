@@ -109,11 +109,9 @@ function update_or_merge () {
   done
 }
 
-
 src=$1
 dst=$2
 orig="${3:-$dst}/.orig"
-# TODO: Заменить на /tmp/irsunc-$$
 wrk="${4:-$dst}/.wrk"
 
 rm -rf "$wrk/"
@@ -122,34 +120,27 @@ wrksrc="$wrk/src"
 wrkdst="$wrk/dst"
 wrkorig="$wrk/orig"
 
-#if [ ! -d "$orig/" ]; then
-#  rsync -r "$src/" "$dst/"
-#  rsync -r "$dst/" "$orig/"
-#  exit 0
-#fi
-
 mkdir -p $orig
 mkdir -p $wrksrc
 mkdir -p $wrkdst
 mkdir -p $wrkorig
 
-rsync -r --exclude ".wrk/" --exclude ".orig/" "$src/" "$wrksrc/"
+rsync -r --exclude ".wrk/" --exclude ".orig/" --exclude "build/" "$src/" "$wrksrc/"
 pushd "$wrksrc" > /dev/null
 find . -type f -printf '%P\n' > "../src-list.txt"
 popd > /dev/null
 
-rsync -r --exclude ".wrk/" --exclude ".orig/" "$dst/" "$wrkdst/"
+rsync -r --exclude ".wrk/" --exclude ".orig/" --exclude "build/" "$dst/" "$wrkdst/"
 pushd "$wrkdst" > /dev/null
 find . -type f -printf '%P\n' > "../dst-list.txt"
 popd > /dev/null
 
-rsync -r --exclude ".wrk/" --exclude ".orig/" "$orig/" "$wrkorig/"
+rsync -r --exclude ".wrk/" --exclude ".orig/" --exclude "build/" "$orig/" "$wrkorig/"
 
 pushd "$wrk" > /dev/null
 
 rm -f report.txt
 
-#readarray lines < "src-list.txt"
 IFS=$'\n' read -d '' -r -a lines < src-list.txt
 
 discard=0

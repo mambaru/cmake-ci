@@ -55,7 +55,8 @@ macro(env_option OPT_NAME TEXT VALUE)
   endif()
 endmacro()
 
-env_option(BUILD_SHARED_LIBS "Create shared libraries" ON)
+env_option(BUILD_SHARED_LIBS "Create shared libraries" OFF)
+#env_option(BUILD_SYSTEM_SHARED_LIBS "Create system shared libraries" OFF)
 env_option(BUILD_TESTING "Build with tests and samples" OFF)
 env_option(CODE_COVERAGE "Build with code coverage" OFF)
 env_option(WITH_SAMPLES "Build with samples" ON)
@@ -65,13 +66,13 @@ env_option(APOCALYPTIC_MODE "Do not disable test suite and paranoid warning mode
 
 if (NOT BUILD_SHARED_LIBS)
   set(Boost_USE_STATIC_LIBS ON)
-  set(Boost_USE_STATIC_RUNTIME ON)
   if ( NOT CMAKE_POSITION_INDEPENDENT_CODE)
     list(APPEND ${PROJECT_NAME}_wci_properties POSITION_INDEPENDENT_CODE OFF)
   endif()
-  
-  if ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
-    if ( NOT BUILD_SYSTEM_SHARED_LIBS )
+
+  if ( NOT BUILD_SYSTEM_SHARED_LIBS )
+    set(Boost_USE_STATIC_RUNTIME ON)
+    if ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
       list(APPEND ${PROJECT_NAME}_wci_libraries -static-libgcc -static-libstdc++)
     endif()
   endif()

@@ -19,11 +19,12 @@ function update_if ()
     echo "Отставание от мастера на $count1. Обновляем."
     git checkout master
     git pull origin master
+    git pull --tags -f origin master
     git submodule update --recursive
   else
     echo "Переключаем на master."
     git checkout master
-    git pull origin master
+    git pull pull --tags -f origin master
     git submodule update --recursive
   fi
 }

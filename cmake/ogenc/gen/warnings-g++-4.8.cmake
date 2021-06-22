@@ -30,7 +30,7 @@ ogenc_warning(-Wtrampolines "Warn whenever a trampoline is generated." ON)
 ogenc_warning(-Wunused-macros "Warn about macros defined in the main file that are not used." ON)
 ogenc_warning(-Wuseless-cast "Warn about useless casts." ON)
 ogenc_warning(-Wvector-operation-performance "Warn when a vector operation is compiled outside the SIMD." ON)
-ogenc_warning(-Wwrite-strings "In C++, nonzero means warn about deprecated conversion from string literals to 'char *'. In C, similar warning, except that the conversion is of course" ON)
+ogenc_warning(-Wwrite-strings "In C++, nonzero means warn about deprecated conversion from string literals to 'char *'. In C, similar warning, except that the conversion is of course not" ON)
 ogenc_warning(-Wzero-as-null-pointer-constant "Warn when a literal '0' is used as null pointer." ON)
 
 ogenc_warning(-Wabi-tag "Warn if a subobject has an abi_tag attribute that the complete object type does not have." OFF)
