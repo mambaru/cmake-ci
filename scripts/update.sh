@@ -24,7 +24,7 @@ function update_if ()
   else
     echo "Переключаем на master."
     git checkout master
-    git pull pull --tags -f origin master
+    git pull --tags -f origin master
     git submodule update --recursive
   fi
 }
