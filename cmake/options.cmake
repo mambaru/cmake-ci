@@ -57,7 +57,7 @@ endmacro()
 
 env_option(BUILD_SHARED_LIBS "Create shared libraries" OFF)
 #env_option(BUILD_SYSTEM_SHARED_LIBS "Create system shared libraries" OFF)
-env_option(BUILD_TESTING "Build with tests and samples" OFF)
+#env_option(BUILD_TESTING "Build with tests and samples" OFF)
 env_option(CODE_COVERAGE "Build with code coverage" OFF)
 env_option(WITH_SAMPLES "Build with samples" ON)
 env_option(NO_MEMCHECK "Disable all valgrind tests" OFF)
