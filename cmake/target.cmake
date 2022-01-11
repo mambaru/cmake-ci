@@ -86,7 +86,7 @@ MACRO(wci_test)
 
   if ( TARGET ${args_TARGET} )
     wci_target_(${args_TARGET})
-    set_target_properties(${args_TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${args_WORKING_DIRECTORY}")
+    set_target_properties(${args_TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${UNIT_TEST_BIN_OUTPUT_DIR}")
   endif()
 
   add_test(NAME ${args_NAME} COMMAND ${args_COMMAND} CONFIGURATIONS ${args_CONFIGURATIONS} WORKING_DIRECTORY ${args_WORKING_DIRECTORY})
