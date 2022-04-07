@@ -10,15 +10,17 @@ done
 
 boost_name="boost_${ver_}"
 boost_tar="${boost_name}.tar.gz"
-
 boost_url="https://boostorg.jfrog.io/artifactory/main/release/$ver/source/${boost_tar}"
-if [ ! -d "$boost_name" ]; then
-  if [ ! -f "$boost_tar" ]; then
-    echo "Download boost from ${boost_url} ..."
-    curl -L ${boost_url} --output ${boost_tar}
-  fi
-  echo "Unpack ${boost_tar}..."
-  tar -xf ${boost_tar}
+
+if [ ! -f "$boost_tar" ]; then
+  echo "Download boost from ${boost_url} ..."
+  curl -L ${boost_url} --output ${boost_tar}
+fi
+echo "Unpack ${boost_tar}..."
+if ! tar -xf ${boost_tar}; then
+  echo "Download boost from ${boost_url} ..."
+  curl -L ${boost_url} --output ${boost_tar}
+  tar -xf ${boost_tar} && exit 1
 fi
 
 boost_root="${PWD}/boost"
@@ -35,8 +37,4 @@ pushd $boost_name
   ./b2 ${b2_params} --prefix=$boost_root install > /dev/null
 popd
 
-echo echo "Delete ${PWD}/$boost_name..." > delete_boost.sh
-echo rm -rf ${PWD}/$boost_name >> delete_boost.sh
-echo rm -rf ${PWD}/$boost_tar >> delete_boost.sh
-echo echo "${boost_name} Done!" >> delete_boost.sh
 

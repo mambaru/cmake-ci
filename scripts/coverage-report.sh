@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Запускать из корня проекта ./external/cmake-ci/scripts/coverage-report.sh
-# Параметры:
-#   $1 [./build] директория сборки
-#   $2 [./build/cov-report] директория отчета или no-report если не нужен (для ci)
+# Run from project root ./external/cmake-ci/scripts/coverage-report.sh
+# Options:
+# $1 [./build] build directory
+# $2 [./build/cov-report] report directory or no-report if not needed (for ci)
 
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 project_name="$(basename ${PWD})"
