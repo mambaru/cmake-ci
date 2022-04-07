@@ -1,3 +1,4 @@
-set(REPO_LIST "." "https://github.com/mambaru/")
-set(faslib_REPO "https://github.com/migashko/faslib.git")
-
+# используем относительные пути
+# "../../cpp/" "git@gitlab.mamba.ru:cpp/" "https://gitlab.mamba.ru/cpp/" 
+# "https://github.com/migashko/" "https://github.com/migashko/"
+set(REPO_LIST "." )
