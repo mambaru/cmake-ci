@@ -13,7 +13,7 @@
 # SAMPLES - не отключать сборку примеров
 # COVERAGE - не отключать компиляцию с покрытием тестов
 # 
-# Голобальные переменные
+# Голобальные переменные:
 # APOCALYPTIC_WARNINGS - не отключать предупреждения
 # APOCALYPTIC_BUILD - не отключать сборку тестов, примеров и отчетов о покрытии тестами
 FUNCTION(wci_add_subdirectory)
@@ -24,20 +24,24 @@ FUNCTION(wci_add_subdirectory)
     message(FATAL_ERROR "PATH argument is required") 
   endif()
 
-  if ( NOT APOCALYPTIC_WARNINGS AND NOT WARNINGS)
+  if ( NOT APOCALYPTIC_WARNINGS AND NOT arg_WARNINGS)
+    message(STATUS "${arg_PATH}: PARANOID_WARNINGS OFF")
     set(PARANOID_WARNINGS OFF)
     set(OGENC_WARNINGS OFF)
   endif()
 
-  if (NOT APOCALYPTIC_BUILD AND NOT TESTING)
+  if (NOT APOCALYPTIC_BUILD AND NOT arg_TESTING)
+    message(STATUS "${arg_PATH}: BUILD_TESTING OFF")
     set(BUILD_TESTING OFF)
   endif()
 
-  if (NOT APOCALYPTIC_BUILD AND NOT SAMPLES)
+  if (NOT APOCALYPTIC_BUILD AND NOT arg_SAMPLES)
+    message(STATUS "${arg_PATH}: WITH_SAMPLES OFF")
     set(WITH_SAMPLES OFF)
   endif()
 
-  if (NOT APOCALYPTIC_BUILD AND NOT COVERAGE)
+  if (NOT APOCALYPTIC_BUILD AND NOT arg_COVERAGE)
+    message(STATUS "${arg_PATH}: CODE_COVERAGE OFF")
     set(CODE_COVERAGE OFF)
   endif()
 
@@ -99,11 +103,8 @@ FUNCTION( wci_prepare_name )
   wci_split_name(IN_STR "${arg_IN_STR}" OUT_PREFIX in_pef OUT_GROUP in_gr OUT_NAME in_name OUT_EXT in_ex)
   set(${arg_OUT_NAME} "${in_name}" PARENT_SCOPE)
 
-  set(out_ext "")
-  if ( "${in_ex}" STREQUAL "")
-    set(out_ext ".git")
-  endif()
-
+  set(out_ext "${in_ex}")
+  
   # Если задано только имя, то смотрим нет ли для него определения имя_REPO 
   if ( ("${in_pref}" STREQUAL "") AND ( "${in_gr}" STREQUAL "") )
     if (DEFINED ${in_name}_REPO)
@@ -165,16 +166,31 @@ FUNCTION(wci_add_submodule)
 
   set(libdir "external/${arg_NAME}")
 
-  if ( NOT arg_BRANCH )
-    set(arg_BRANCH master)
+  if ( NOT ${arg_BRANCH} STREQUAL "")
+    set(opt -b ${arg_BRANCH})
+  endif()
+  
+  wci_split_name(IN_STR ${arg_URL} OUT_EXT url_ex)
+  if ("${url_ex}" STREQUAL "")
+    set(git_ex ".git")
   endif()
 
   execute_process(
-    COMMAND git submodule add -b "${arg_BRANCH}" "${arg_URL}" "${libdir}"
+    COMMAND git submodule add ${opt} ${arg_URL}${git_ex} ${libdir}
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     RESULT_VARIABLE EXIT_CODE
+    ERROR_QUIET
   )
 
+  if ( (NOT EXIT_CODE EQUAL 0) AND ("${url_ex}" STREQUAL "") )
+     execute_process(
+      COMMAND git submodule add ${opt} ${arg_URL} ${libdir}
+      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+      RESULT_VARIABLE EXIT_CODE
+      ERROR_QUIET
+    )
+  endif()
+  
   if ( EXIT_CODE EQUAL 0 ) 
     set( ${arg_OUT_STATUS} TRUE PARENT_SCOPE )
   else() 
@@ -204,7 +220,7 @@ ENDFUNCTION(wci_submodule_check_arguments)
 
 FUNCTION(wci_submodule)
 
-  cmake_parse_arguments(arg "SUPERMODULE;EXTERNAL;INTERNAL;PRIVATE" "NAME;BRANCH" "" ${ARGN} )
+  cmake_parse_arguments(arg "SUPERMODULE;EXTERNAL;INTERNAL;PRIVATE;WARNINGS;TESTING;SAMPLES;COVERAGE" "NAME;BRANCH" "" ${ARGN} )
   
   wci_submodule_check_arguments("${arg_NAME}" "${arg_BRANCH}" 
                                 "${arg_SUPERMODULE}" "${arg_EXTERNAL}" 
@@ -263,7 +279,7 @@ FUNCTION(wci_submodule)
       set(status FALSE)
       foreach(REPO ${REPO_LIST})
         wci_prepare_name(IN_STR ${arg_NAME} IN_REPO ${REPO} OUT_NAME name_lib OUT_URI uri_lib)
-        message(STATUS "Attempt to add submodule external/${name_lib} ${uri_lib}")
+        message(STATUS "Attempt to add submodule external/${name_lib} from ${REPO} [${uri_lib}]")
         wci_add_submodule(NAME "${name_lib}" URL "${uri_lib}" BRANCH "${arg_BRANCH}" OUT_STATUS status)
         if ( status )
           break()
@@ -272,12 +288,26 @@ FUNCTION(wci_submodule)
       endforeach()
       
       if ( status )
-        message(STATUS "Successful add submodule external/${name_lib} ${uri_lib} BRANCH ${arg_BRANCH}")
+        message(STATUS "Successful add submodule external/${name_lib} ${uri_lib} ${arg_BRANCH}")
       else()
-        message(FATAL_ERROR "Unsuccessful add submodule external/${name_lib} ${uri_lib} BRANCH ${arg_BRANCH}")
+        message(FATAL_ERROR "Unsuccessful add submodule external/${name_lib} ${uri_lib} ${arg_BRANCH}")
       endif()
       
     endif()
   endif()
-  wci_add_subdirectory(PATH "external/${name_lib}")
+
+  if ( arg_WARNINGS )
+    list(APPEND params WARNINGS)
+  endif()
+  if ( arg_TESTING )
+    list(APPEND params TESTING)
+  endif()
+  if ( arg_SAMPLES )
+    list(APPEND params SAMPLES)
+  endif()
+  if ( arg_COVERAGE )
+    list(APPEND params COVERAGE)
+  endif()
+  
+  wci_add_subdirectory(PATH "external/${name_lib}" ${params} )
 ENDFUNCTION(wci_submodule)
