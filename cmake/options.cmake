@@ -25,7 +25,7 @@ if (NOT MSVC)
   include(${CMAKE_CURRENT_LIST_DIR}/ogenc.cmake)
 endif()
 
-list(APPEND ${PROJECT_NAME}_wci_properties
+list(APPEND global_wci_properties
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/archive"
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/lib"
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
@@ -68,7 +68,9 @@ env_option(APOCALYPTIC_MODE "Do not disable test suite and paranoid warning mode
 if (NOT BUILD_SHARED_LIBS)
   set(Boost_USE_STATIC_LIBS ON)
   if ( NOT CMAKE_POSITION_INDEPENDENT_CODE)
-    list(APPEND ${PROJECT_NAME}_wci_properties POSITION_INDEPENDENT_CODE OFF)
+    list(APPEND global_wci_properties POSITION_INDEPENDENT_CODE OFF)
+  else()
+    list(APPEND global_wci_properties POSITION_INDEPENDENT_CODE ${CMAKE_POSITION_INDEPENDENT_CODE})
   endif()
 
   if ( NOT BUILD_SYSTEM_SHARED_LIBS )
@@ -81,9 +83,12 @@ else()
   set(Boost_USE_STATIC_LIBS OFF)
   set(Boost_USE_STATIC_RUNTIME OFF)
   if ( NOT CMAKE_POSITION_INDEPENDENT_CODE)
-    list(APPEND ${PROJECT_NAME}_wci_properties POSITION_INDEPENDENT_CODE ON)
+    list(APPEND global_wci_properties POSITION_INDEPENDENT_CODE ON)
+  else()
+    list(APPEND global_wci_properties POSITION_INDEPENDENT_CODE ${CMAKE_POSITION_INDEPENDENT_CODE})
   endif()
 endif()
+
 
 if ( CODE_COVERAGE )
   set(BUILD_TESTING ON)
@@ -99,6 +104,7 @@ if (NOT MSVC)
   list(APPEND ${PROJECT_NAME}_wci_options $<$<CONFIG:Release>:-march=native>)
   list(APPEND ${PROJECT_NAME}_wci_options $<$<CONFIG:RelWithDebInfo>:-march=native>)
   list(APPEND ${PROJECT_NAME}_wci_definition $<$<CXX_COMPILER_ID:Clang>:__STRICT_ANSI__>)
+  list(APPEND ${PROJECT_NAME}_wci_definition -DBOOST_ASIO_NO_DEPRECATED)
 
   if ( CMAKE_CXX_STANDARD EQUAL 98 )
     option(DISABLE_LONG_LONG_98 "Disable long-long for 98" OFF)

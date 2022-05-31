@@ -1,0 +1,16 @@
+ogenc_optimize(-fdelete-null-pointer-checks "Delete useless null pointer checks." OFF)
+ogenc_optimize(-ffold-simple-inlines "Fold calls to simple inline functions." OFF)
+ogenc_optimize(-fharden-compares "Harden conditionals not used in branches, checking reversed conditions." OFF)
+ogenc_optimize(-fharden-conditional-branches "Harden conditional branches by checking reversed conditions." OFF)
+ogenc_optimize(-fprefetch-loop-arrays "Generate prefetch instructions, if available, for arrays in loops." OFF)
+ogenc_optimize(-frename-registers "Perform a register renaming optimization pass." OFF)
+ogenc_optimize(-fsemantic-interposition "Allow interposing function (or variables) by ones with different semantics (or initializer) respectively by" OFF)
+ogenc_optimize(-fstrict-volatile-bitfields "Force bitfield accesses to match their type width." OFF)
+ogenc_optimize(-ftree-cselim "Transform condition stores into unconditional ones." OFF)
+ogenc_optimize(-ftree-loop-if-convert "Convert conditional jumps in innermost loops to branchless equivalents." OFF)
+ogenc_optimize(-fvar-tracking-assignments "Perform variable tracking by annotating assignments." OFF)
+ogenc_optimize(-fweb "Construct webs and split unrelated uses of single variable." OFF)
+ogenc_optimize(-gstatement-frontiers "Emit progressive recommended breakpoint locations." OFF)
+ogenc_optimize(-Oz "Optimize for space aggressively rather than speed." OFF)
+
+
