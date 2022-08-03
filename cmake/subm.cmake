@@ -311,3 +311,92 @@ FUNCTION(wci_submodule)
   
   wci_add_subdirectory(PATH "external/${name_lib}" ${params} )
 ENDFUNCTION(wci_submodule)
+
+FUNCTION(wci_third_party)
+
+  cmake_parse_arguments(arg "" "NAME;BRANCH;PARAMS" "" ${ARGN} )
+
+  wci_split_name(IN_STR ${arg_NAME} OUT_NAME name_lib)
+
+  if ( EXISTS ${CMAKE_BINARY_DIR}/third_party AND EXISTS ${CMAKE_BINARY_DIR}/third_party_src )
+    execute_process(
+      COMMAND bash "-c" "ls -1 ${name_lib} | wc -l"
+      OUTPUT_VARIABLE EXIST_LIB_FILES
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/third_party
+      ERROR_QUIET
+    )
+  else()
+    execute_process(
+      COMMAND bash "-c" "mkdir third_party; mkdir third_party_src"
+      RESULT_VARIABLE EXIST_LIB_FILES
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      ERROR_QUIET
+    )
+
+  endif()
+
+  if( "${EXIST_LIB_FILES}" EQUAL "0")
+
+    execute_process(
+      COMMAND bash "-c" "ls -1 ${name_lib} | wc -l"
+      OUTPUT_VARIABLE EXIST_SRC_FILES
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/third_party_src
+      ERROR_QUIET
+    )
+
+    if( ${EXIST_SRC_FILES} EQUAL 0)
+
+      foreach(REPO ${REPO_LIST})
+
+        wci_prepare_name(IN_STR ${arg_NAME} IN_REPO ${REPO} OUT_NAME name_lib OUT_URI uri_lib)
+
+        message(STATUS "Attempt to clone to ${CMAKE_BINARY_DIR}/third_party_src/${name_lib} from ${REPO} [${uri_lib}]")
+
+        execute_process(
+          COMMAND bash "-c" "rm -rf ${name_lib} && git clone ${uri_lib}"
+          RESULT_VARIABLE CLONE_ERROR
+          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/third_party_src/
+        )
+
+        if ( arg_BRANCH )
+          execute_process(
+            COMMAND bash "-c" "git checkout ${arg_BRANCH}"
+            RESULT_VARIABLE CLONE_ERROR
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/third_party_src/${name_lib}
+          )
+        endif()
+
+        if ( NOT CLONE_ERROR )
+          break()
+        endif()
+      endforeach()
+
+      if ( NOT CLONE_ERROR )
+        message(STATUS "Successful clone to ${CMAKE_BINARY_DIR}/third_party_src/${name_lib} ${uri_lib} ${arg_BRANCH}")
+      else()
+        message(FATAL_ERROR "Unsuccessful clone to ${CMAKE_BINARY_DIR}/third_party_src/${name_lib} ${uri_lib} ${arg_BRANCH}")
+      endif()
+    endif()
+
+    execute_process(
+      COMMAND bash "-c" "cmake -B ./build ${arg_PARAMS} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/third_party/"
+      RESULT_VARIABLE BUILD_ERROR
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/third_party_src/${name_lib}
+    )
+
+    execute_process(
+      COMMAND bash "-c" "cmake --build ./build -- -j 4"
+      RESULT_VARIABLE BUILD_ERROR
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/third_party_src/${name_lib}
+   )
+
+    execute_process(
+      COMMAND bash "-c" "cmake --install ./build"
+      RESULT_VARIABLE BUILD_ERROR
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/third_party_src/${name_lib}
+   )
+
+  endif()
+
+ENDFUNCTION(wci_third_party)
+
