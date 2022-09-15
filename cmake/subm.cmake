@@ -356,6 +356,7 @@ FUNCTION(wci_third_party)
           COMMAND bash "-c" "rm -rf ${name_lib} && git clone ${uri_lib}"
           RESULT_VARIABLE CLONE_ERROR
           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/third_party_src/
+          ERROR_QUIET
         )
 
         if ( arg_BRANCH )
@@ -363,6 +364,7 @@ FUNCTION(wci_third_party)
             COMMAND bash "-c" "git checkout ${arg_BRANCH}"
             RESULT_VARIABLE CLONE_ERROR
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/third_party_src/${name_lib}
+            ERROR_QUIET
           )
         endif()
 
