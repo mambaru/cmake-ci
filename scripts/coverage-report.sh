@@ -41,7 +41,9 @@ cov_info=$build_dir/$project_name-coverage.info
 rm -f $cov_info
 
 echo "We collect data for the report..."
-lcov --quiet --capture --directory "$build_dir" --base-directory $prjdir --no-external --output-file $cov_info || exit 1
+lcov --quiet --capture --directory "$build_dir" --base-directory $prjdir --no-external --output-file $cov_info \
+  || lcov --ignore-errors mismatch,mismatch --quiet --capture --directory "$build_dir" --base-directory $prjdir --no-external --output-file $cov_info  \
+  || exit 1
 echo "Delete data for submodules..."
 lcov --quiet --remove $cov_info '*/external/*' --output-file $cov_info || exit 2
 
