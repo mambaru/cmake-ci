@@ -26,7 +26,7 @@ function check() {
 
   UPSTREAM='@{u}'
   LOCAL=$(git rev-parse @)  || exit_subm $?
-  REMOTE=$(git rev-parse "$UPSTREAM" 2>/dev/null)  || exit 0
+  REMOTE=$(git rev-parse "$UPSTREAM" 2>/dev/null)  || exit_subm $?
   BASE=$(git merge-base @ "$UPSTREAM" 2>/dev/null)  || exit_subm $?
 
   if [ $LOCAL = $REMOTE ]; then
