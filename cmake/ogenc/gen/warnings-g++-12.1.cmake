@@ -5,17 +5,10 @@ ogenc_warning(-Wc++17-extensions "Warn about C++17 constructs in code compiled w
 ogenc_warning(-Wc++20-extensions "Warn about C++20 constructs in code compiled with an older standard." ON)
 ogenc_warning(-Wc++23-extensions "Warn about C++23 constructs in code compiled with an older standard." ON)
 ogenc_warning(-Wdangling-pointer "Warn for uses of pointers to auto variables whose lifetime has ended. Same as -Wdangling-pointer=." ON)
-ogenc_warning(-Wexceptions "Warn when an exception handler is shadowed by another handler." ON)
 ogenc_warning(-Winterference-size "Warn about nonsensical values of --param destructive-interference-size or constructive-interference-size." ON)
-ogenc_warning(-Winvalid-imported-macros "Warn about macros that have conflicting header units definitions." ON)
 ogenc_warning(-Wmissing-requires "Warn about likely missing requires keyword." ON)
-ogenc_warning(-Wmissing-template-keyword "Warn when the template keyword is missing after a member access token in a dependent member access" ON)
-ogenc_warning(-Wnarrowing "Warn about narrowing conversions within { } that are ill-formed in C++11." ON)
+ogenc_warning(-Wmissing-template-keyword "Warn when the template keyword is missing after a member access token in a dependent member access expression if" ON)
 ogenc_warning(-Wopenacc-parallelism "Warn about potentially suboptimal choices related to OpenACC parallelism." ON)
-ogenc_warning(-Wpacked-bitfield-compat "Warn about packed bit-fields whose offset changed in GCC 4.4." ON)
-ogenc_warning(-Wshift-negative-value "Warn if left shifting a negative value." ON)
 ogenc_warning(-Wtrivial-auto-var-init "Warn about cases where -ftrivial-auto-var-init cannot initialize an auto variable." ON)
-ogenc_warning(-Wvla "Warn if a variable length array is used." ON)
 
-ogenc_warning(-Wlong-long "Do not warn about using `long long` when -pedantic." OFF)
 

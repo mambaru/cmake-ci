@@ -13,7 +13,7 @@ ogenc_warning(-Winit-self "Warn about variables which are initialized to themsel
 ogenc_warning(-Wmissing-declarations "Warn about global functions without previous declarations." ON)
 ogenc_warning(-Wnon-virtual-dtor "Warn about non-virtual destructors." ON)
 ogenc_warning(-Wold-style-cast "Warn if a C-style cast is used in a program." ON)
-ogenc_warning(-Woverloaded-virtual "Warn about overloaded virtual function names." ON)
+ogenc_warning(-Woverloaded-virtual "Warn about overloaded virtual function names. Same as -Woverloaded-virtual=." ON)
 ogenc_warning(-Wpacked "Warn when the packed attribute has no effect on struct layout." ON)
 ogenc_warning(-Wredundant-decls "Warn about multiple declarations of the same object." ON)
 ogenc_warning(-Wreorder "Warn when the compiler reorders code." ON)
@@ -24,7 +24,7 @@ ogenc_warning(-Wswitch-default "Warn about enumerated switches missing a `defaul
 ogenc_warning(-Wswitch-enum "Warn about all enumerated switches missing a specific case." ON)
 ogenc_warning(-Wsynth "Deprecated. This switch has no effect." ON)
 ogenc_warning(-Wunused-macros "Warn about macros defined in the main file that are not used." ON)
-ogenc_warning(-Wwrite-strings "In C++, nonzero means warn about deprecated conversion from string literals to 'char *'. In C, similar" ON)
+ogenc_warning(-Wwrite-strings "In C++, nonzero means warn about deprecated conversion from string literals to 'char *'. In C, similar warning," ON)
 
 ogenc_warning(-Wabi "Warn about things that will change when compiling with an ABI-compliant compiler." OFF)
 ogenc_warning(-Waggregate-return "Warn about returning structures, unions or arrays." OFF)
